@@ -33,6 +33,11 @@ public class Kiosk {
                 break;
             }
 
+            if (menus.size() < mainInput) {
+                System.out.println("잘못된 메뉴를 선택하였습니다 다시 입력해 주세요.");
+                continue;
+            }
+
             Menu menu = selectMainMenu(mainInput);
 
             while (true) {
@@ -42,6 +47,11 @@ public class Kiosk {
                 if (menuInput == 0) {
                     System.out.println("처음으로 이동합니다.");
                     break;
+                }
+
+                if (menu.findAllMenuItem().size() < menuInput) {
+                    System.out.println("잘못된 메뉴를 선택하였습니다 다시 입력해 주세요.");
+                    continue;
                 }
 
                 selectMenuItem(menuInput, menu);            // 선택된 메뉴 출력
@@ -68,6 +78,7 @@ public class Kiosk {
     /**
      * 조회된 메뉴를 반환
      * 검증된 입력값을 받아 menus 리스트에서 Menu를 조회해서 반환함(마찬가지로 입력값 -1이 필요함)
+     * input 값이 menus의 값보다 큰 경우 예외 처리가 되도록 코드 추가
      * @param input 검증된 입력값
      * @return 조회된 Menu
      */
