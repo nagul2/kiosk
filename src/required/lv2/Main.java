@@ -19,7 +19,8 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            int input = InputValidator(scanner, menuItems);
+            menuPrinter(menuItems);
+            int input = InputValidator(scanner);
             if (input == 0) {
                 System.out.println("프로그램을 종료합니다.");
                 break;
@@ -38,12 +39,10 @@ public class Main {
      * 입력값을 검증하고 반환
      * 숫자가 아닌 다른 입력값인 경우 비즈니스 로직이 벗어났으므로 별도의 예외처리하여 재시작을 위한 값을 반환
      * @param scanner 입력을 위한 Scanner
-     * @param menuItems 메뉴를 출력하기 위한 MenuItem 리스트
      * @return 검증된 입력값 및 예외 로직에 따른 동작을 반환
      */
-    private static int InputValidator(Scanner scanner, List<MenuItem> menuItems) {
+    private static int InputValidator(Scanner scanner) {
         try {
-            menuPrinter(menuItems);
             int input = scanner.nextInt();
             scanner.nextLine();
             return Math.abs(input);
