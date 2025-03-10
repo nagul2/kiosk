@@ -20,7 +20,7 @@ public class Kiosk {
     }
 
     /**
-     * main 메서드에서 실행하던 애플리케이션 로직을 Kiosk 클래스이 start()메서드로 이동
+     * main 메서드에서 실행하던 애플리케이션 로직을 Kiosk 클래스의 start()메서드로 이동
      * 프로그램을 실행하는 Main 클래스이 main 메서드는 키오스크를 생성하고 start()메서드만 호출하면 됨
      */
     public void start() {
