@@ -49,7 +49,7 @@ public class Kiosk {
      * @param scanner 입력을 위한 Scanner
      * @return 검증된 입력값 및 예외 로직에 따른 동작을 반환
      */
-    private static int InputValidator(Scanner scanner) {
+    private int InputValidator(Scanner scanner) {
         try {
             int input = scanner.nextInt();
             scanner.nextLine();
@@ -67,7 +67,7 @@ public class Kiosk {
      * 하드코딩하지 않고 매개변수로 넘어온 List<MenuItem>을 활용
      * @param menuItems 상품이 담긴 MenuItem 리스트
      */
-    private static void menuPrinter(List<MenuItem> menuItems) {
+    private void menuPrinter(List<MenuItem> menuItems) {
         System.out.println("[SHAKESHACK MENU]");
         int count = 1;
         for (MenuItem menuItem : menuItems) {
@@ -80,7 +80,7 @@ public class Kiosk {
      * 검증된 입력값에 따라 동작하는 메서드
      * @param input 검증된 입력 값
      */
-    private static void selectMenu(int input) {
+    private void selectMenu(int input) {
         switch (input) {
             case 1 -> System.out.println("ShackBurger 1개를 선택 하셨습니다. 가격: 6,900원");
             case 2 -> System.out.println("SmokeShack 1개를 선택 하셨습니다. 가격: 8,900원");
