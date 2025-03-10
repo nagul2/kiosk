@@ -26,7 +26,7 @@ public class Kiosk {
 
         while (true) {
             categoryPrinter(menus);                         // 메인 메뉴 -> 메뉴의 대분류(카테고리) 출력
-            int mainInput = InputValidator(scanner);        // 입력값 검증 -> 카테고리 입력
+            int mainInput = inputValidator(scanner);        // 입력값 검증 -> 카테고리 입력
 
             if (mainInput == 0) {
                 System.out.println("프로그램을 종료합니다.");
@@ -42,7 +42,7 @@ public class Kiosk {
 
             while (true) {
                 menuPrinter(menu);                          // 카테고리 하위 메뉴 출력
-                int menuInput = InputValidator(scanner);    // 입력값 검증(재사용) -> 상세 메뉴 입력
+                int menuInput = inputValidator(scanner);    // 입력값 검증(재사용) -> 상세 메뉴 입력
 
                 if (menuInput == 0) {
                     System.out.println("처음으로 이동합니다.");
@@ -92,7 +92,7 @@ public class Kiosk {
      * @param scanner 입력을 위한 Scanner
      * @return 검증된 입력값 및 예외 로직에 따른 동작을 반환
      */
-    private int InputValidator(Scanner scanner) {
+    private int inputValidator(Scanner scanner) {
         try {
             int input = scanner.nextInt();
             scanner.nextLine();

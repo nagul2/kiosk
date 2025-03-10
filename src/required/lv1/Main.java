@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            int input = InputValidator(scanner);    // 입력 값을 받고 검증, 여기서 메뉴를 출력
+            int input = inputValidator(scanner);    // 입력 값을 받고 검증, 여기서 메뉴를 출력
             if (input == 0) {
                 System.out.println("프로그램을 종료합니다.");
                 break;
@@ -41,7 +41,7 @@ public class Main {
      * @param scanner 입력을 위한 Scanner
      * @return 검증된 입력값 및 예외 로직에 따른 동작을 반환
      */
-    private static int InputValidator(Scanner scanner) {
+    private static int inputValidator(Scanner scanner) {
         try {
             menuPrinter();
             int input = scanner.nextInt();
