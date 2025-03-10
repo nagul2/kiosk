@@ -1,4 +1,4 @@
-package required;
+package required.lv1;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            int input = InputValidator(scanner);
+            int input = InputValidator(scanner);    // 입력 값을 받고 검증, 여기서 메뉴를 출력
             if (input == 0) {
                 System.out.println("프로그램을 종료합니다.");
                 break;
@@ -23,6 +23,9 @@ public class Main {
         }
     }
 
+    /**
+     * 메뉴를 출력하는 메서드
+     */
     private static void menuPrinter() {
         System.out.println("[SHAKESHACK MENU]");
         System.out.println("1. ShackBurger\t| ₩6,900 | 토마토, 양상추, 쉑소스가 토핑된 치즈버거");
@@ -32,6 +35,12 @@ public class Main {
         System.out.println("0. 종료\t\t\t| 종료");
     }
 
+    /**
+     * 입력값을 검증하고 반환
+     * 숫자가 아닌 다른 입력값인 경우 비즈니스 로직이 벗어났으므로 별도의 예외처리하여 재시작을 위한 값을 반환
+     * @param scanner 입력을 위한 Scanner
+     * @return 검증된 입력값 및 예외 로직에 따른 동작을 반환
+     */
     private static int InputValidator(Scanner scanner) {
         try {
             menuPrinter();
@@ -46,6 +55,10 @@ public class Main {
         }
     }
 
+    /**
+     * 검증된 입력값에 따라 동작하는 메서드
+     * @param input 검증된 입력 값
+     */
     private static void selectMenu(int input) {
         switch (input) {
             case 1 -> System.out.println("ShackBurger 1개를 선택 하셨습니다. 가격: 6,900원");
