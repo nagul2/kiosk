@@ -72,6 +72,9 @@ public class Kiosk {
 
                 int lastSelect = inputValidator(scanner);           // 입력값 검증 -> 주문, 메뉴판 이동 선택
                 if (lastSelect == 1) {                              // lastSelect == 1 -> 최종 주문
+
+                    //todo 할인 로직 추가
+
                     System.out.println("주문이 완료 되었습니다. 금액은 ₩ " + lastPriceFormat + " 입니다");
                     shoppingCart.deleteAllCart();                   // 주문이 완료되면 장바구니 초기화 후 flag = false 설정
                     flag = false;
@@ -88,6 +91,7 @@ public class Kiosk {
             /**
              * 주문 취소 로직 - 장바구니 초기화
              */
+            // todo 전체 취소화 부분 취소
             if (mainInput == menusSize + 2) {
                 System.out.println("장바구니가 비워졌습니다.");
                 System.out.println();
@@ -149,6 +153,7 @@ public class Kiosk {
      * @param shoppingCart  장바구니 리스트
      * @return  포맷팅 된 장바구니 총 금액
      */
+    // todo 최종 금액 뽑아낼 포맷팅 해서 뽑아낼 필요 없음
     private String order(ShoppingCart shoppingCart) {
         System.out.println("아래와 같이 주문 하시겠습니까?");
         System.out.println();
