@@ -46,6 +46,10 @@ public class MenuItem {
         return quantity;
     }
 
+    /**
+     * 수량 추가, 음수로 들어오더라도 절대값으로 값을 추가 되도록 예외 로직 적용
+     * @param quantity 장바구니에 등록한 아이템 수량
+     */
     public void addQuantity(int quantity) {
         this.quantity += Math.abs(quantity);
     }
