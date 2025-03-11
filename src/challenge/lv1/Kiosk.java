@@ -73,7 +73,9 @@ public class Kiosk {
                 int lastSelect = inputValidator(scanner);           // 입력값 검증 -> 주문, 메뉴판 이동 선택
                 if (lastSelect == 1) {                              // lastSelect == 1 -> 최종 주문
                     System.out.println("주문이 완료 되었습니다. 금액은 ₩ " + lastPriceFormat + " 입니다");
-                    break;
+                    shoppingCart.deleteAllCart();                   // 주문이 완료되면 장바구니 초기화 후 flag = false 설정
+                    flag = false;
+                    continue;
                 } else if (lastSelect == 2) {                       // lastSelect == 2 -> 메뉴판 이동
                     System.out.println("메뉴로 돌아갑니다");
                     continue;
@@ -123,6 +125,11 @@ public class Kiosk {
                     flag = true;
                     System.out.println("몇 개 주문 하시겠습니까? ");
                     int quantity = inputValidator(scanner); // 주문 수량
+                    if (quantity == 0) {
+                        System.out.println("장바구니에 담을 수 없습니다.");
+                        flag = false;
+                        return;
+                    }
                     shoppingCart.addCart(menuItem, quantity);
                 } else if (cartAddInput == 2) {
                     System.out.println("취소 하셨습니다. 이전으로 돌아갑니다.");
