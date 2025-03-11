@@ -2,7 +2,18 @@ package challenge.lv1;
 
 import java.util.*;
 
+import static challenge.lv1.util.PriceFormatter.priceFormat;
+
 public class Kiosk {
+    /**
+     * order()메서드를 출력할지 말지 결정하는 플래그 변수
+     */
+    private boolean flag;
+
+    /**
+     * 장바구니 생성
+     */
+    private final ShoppingCart shoppingCart = new ShoppingCart();
 
     /**
      * Menu를 보관하고 관리하는 리스트
@@ -23,23 +34,52 @@ public class Kiosk {
      */
     public void start() {
         Scanner scanner = new Scanner(System.in);
+        int menusSize = menus.size();
 
         while (true) {
             categoryPrinter(menus);                         // 메인 메뉴 -> 메뉴의 대분류(카테고리) 출력
-            int mainInput = inputValidator(scanner);        // 입력값 검증 -> 카테고리 입력
 
+            // flag == true : 주문 로직 가능
+            if (flag) {
+                orderMenuPrinter();                         // 주문 메뉴 출력
+            }
+
+            int mainInput = inputValidator(scanner);        // 입력값 검증 -> 카테고리 입력
             if (mainInput == 0) {
                 System.out.println("프로그램을 종료합니다.");
                 break;
             }
 
-            if (menus.size() < mainInput) {
+            if (flag && mainInput > menusSize + 2|| !flag && mainInput > menusSize){
                 System.out.println("잘못된 메뉴를 선택하였습니다 다시 입력해 주세요.");
                 continue;
             }
 
-            Menu menu = selectMainMenu(mainInput);
+            if (mainInput == menusSize + 1) {                       // mainInput == 4 -> 주문 진행
+                String lastPriceFormat = order(shoppingCart);       // 주문 내역 출력
 
+                int lastSelect = inputValidator(scanner);           // 입력값 검증 -> 주문, 메뉴판 이동 선택
+                if (lastSelect == 1) {                              // lastSelect == 1 -> 최종 주문
+                    System.out.println("주문이 완료 되었습니다. 금액은 ₩ " + lastPriceFormat + " 입니다");
+                    break;
+                } else if (lastSelect == 2) {                       // lastSelect == 2 -> 메뉴판 이동
+                    System.out.println("메뉴로 돌아갑니다");
+                    continue;
+                } else {
+                    System.out.println("잘못된 메뉴를 선택하였습니다 다시 입력해 주세요.");
+                    continue;
+                }
+            }
+
+            if (mainInput == menusSize + 2) {               // mainInput == 5 -> 주문 취소
+                System.out.println("장바구니가 비워졌습니다.");
+                System.out.println();
+                shoppingCart.deleteAllCart();           // 장바구니 초기화
+                flag = false;                           // flag == false: 주문 메뉴 안보임
+                continue;
+            }
+
+            Menu menu = selectMainMenu(mainInput);
             while (true) {
                 menuPrinter(menu);                          // 카테고리 하위 메뉴 출력
                 int menuInput = inputValidator(scanner);    // 입력값 검증(재사용) -> 상세 메뉴 입력
@@ -54,12 +94,41 @@ public class Kiosk {
                     continue;
                 }
 
-                selectMenuItem(menuInput, menu);            // 선택된 메뉴 출력
-                System.out.println("주문이 완료 되었습니다.");
-                System.out.println();
+                MenuItem menuItem = selectMenuItem(menuInput, menu);    // 선택된 메뉴를 출력하고 반환
+
+                cartMenuPrinter(menuItem);                  // 장바구니 관련 메뉴
+                int cartAddInput = inputValidator(scanner); // 입력값 검증 -> 장바구니 담기, 취소 선택
+                if (cartAddInput == 1) {
+                    flag = true;
+                    System.out.println("몇 개 주문 하시겠습니까? ");
+                    int quantity = inputValidator(scanner); // 주문 수량
+                    shoppingCart.addCart(menuItem, quantity);
+                } else if (cartAddInput == 2) {
+                    System.out.println("취소 하셨습니다. 이전으로 돌아갑니다.");
+                    continue;
+                } else {
+                    System.out.println("잘못된 메뉴를 선택하였습니다 다시 입력해 주세요.");
+                    continue;
+                }
                 break;
             }
         }
+    }
+
+    private void cartMenuPrinter(MenuItem menuItem) {
+        System.out.println('"' + menuItem.getName() + " | ₩ " + priceFormat(menuItem.getPrice()) + " | " + menuItem.getDescription() + '"');
+        System.out.println("위 메뉴를 장바구니에 추가 하시겠습니까?");
+        System.out.println("1. 확인\t 2. 취소");
+    }
+
+    private String order(ShoppingCart shoppingCart) {
+        System.out.println("아래와 같이 주문 하시겠습니까?");
+        System.out.println();
+        String totalPriceFormat = shoppingCart.showCart();
+
+        System.out.println();
+        System.out.println("1. 확인\t 2. 메뉴판");
+        return totalPriceFormat;
     }
 
     /**
@@ -73,6 +142,13 @@ public class Kiosk {
             System.out.println(count++ + ". " + menu.getCategory());
         }
         System.out.println("0. 종료");
+    }
+
+    private void orderMenuPrinter() {
+        System.out.println();
+        System.out.println("[ORDER MENU]");
+        System.out.println("4. Orders\t| 장바구니를 확인 후 주문합니다.");
+        System.out.println("5. Cancel\t| 진행중인 주문을 취소 합니다");
     }
 
     /**
@@ -118,7 +194,7 @@ public class Kiosk {
 
         int count = 1;
         for (MenuItem menuItem : menuItems) {
-            System.out.printf("%d. %-18s | ₩ %d | %s%n", count++, menuItem.getName(), menuItem.getPrice(), menuItem.getDescription());        }
+            System.out.printf("%d. %-18s | ₩ %7s | %s%n", count++, menuItem.getName(), priceFormat(menuItem.getPrice()), menuItem.getDescription());        }
         System.out.println("0. 처음으로             | 처음으로 이동");
 
     }
@@ -129,9 +205,10 @@ public class Kiosk {
      * @param input 검증된 메뉴 입력 값
      * @param menu 상세 메뉴가 속한 카테고리
      */
-    private void selectMenuItem(int input, Menu menu) {
+    private MenuItem selectMenuItem(int input, Menu menu) {
         MenuItem menuItem = menu.findMenuItem(input);
-        System.out.printf("선택한 메뉴: %s | ₩ %d | %s%n", menuItem.getName(), menuItem.getPrice(), menuItem.getDescription());
+        System.out.printf("선택한 메뉴: %s | ₩ %7s | %s%n", menuItem.getName(), priceFormat(menuItem.getPrice()), menuItem.getDescription());
+        return menuItem;
     }
 
 }
