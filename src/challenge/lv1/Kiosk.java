@@ -128,7 +128,7 @@ public class Kiosk {
                     if (quantity == 0) {
                         System.out.println("장바구니에 담을 수 없습니다.");
                         flag = false;
-                        return;
+                        continue;
                     }
                     shoppingCart.addCart(menuItem, quantity);
                 } else if (cartAddInput == 2) {
