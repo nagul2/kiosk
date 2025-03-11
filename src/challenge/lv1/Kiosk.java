@@ -34,27 +34,39 @@ public class Kiosk {
      */
     public void start() {
         Scanner scanner = new Scanner(System.in);
-        int menusSize = menus.size();
+        int menusSize = menus.size();       // 등록한 메뉴의 개수를 변수화 (자주 사용함)
 
+        /**
+         * 프로그램 시작
+         */
         while (true) {
             categoryPrinter(menus);                         // 메인 메뉴 -> 메뉴의 대분류(카테고리) 출력
 
-            // flag == true : 주문 로직 가능
+            // flag == true : 주문 로직 활성화
             if (flag) {
                 orderMenuPrinter();                         // 주문 메뉴 출력
             }
 
-            int mainInput = inputValidator(scanner);        // 입력값 검증 -> 카테고리 입력
+            int mainInput = inputValidator(scanner);        // 입력값 검증 -> 메뉴 선택 or flag가 true일 때 주문 및 취소 선택
+
             if (mainInput == 0) {
                 System.out.println("프로그램을 종료합니다.");
                 break;
             }
 
+            /**
+             * 카테고리(Menu)가 고정개수가 아니라 여러 카테고리가 늘어날 수 있기 때문에 memusSize를 기준으로 로직을 작성
+             * flag == true: 주문 메뉴가 활성화되므로 menusSize + 2보다 크면 잘못된 입력값 간주(주문 메뉴는 2개로 고정임)
+             * flag == false: 주문 메뉴가 활성화 되지 않았으므로 menusSize보다 크면 잘못된 입력값으로 간주
+             */
             if (flag && mainInput > menusSize + 2|| !flag && mainInput > menusSize){
                 System.out.println("잘못된 메뉴를 선택하였습니다 다시 입력해 주세요.");
                 continue;
             }
 
+            /**
+             * 주문 관련 로직
+             */
             if (mainInput == menusSize + 1) {                       // mainInput == 4 -> 주문 진행
                 String lastPriceFormat = order(shoppingCart);       // 주문 내역 출력
 
@@ -71,14 +83,20 @@ public class Kiosk {
                 }
             }
 
-            if (mainInput == menusSize + 2) {               // mainInput == 5 -> 주문 취소
+            /**
+             * 주문 취소 로직 - 장바구니 초기화
+             */
+            if (mainInput == menusSize + 2) {
                 System.out.println("장바구니가 비워졌습니다.");
                 System.out.println();
-                shoppingCart.deleteAllCart();           // 장바구니 초기화
-                flag = false;                           // flag == false: 주문 메뉴 안보임
+                shoppingCart.deleteAllCart();
+                flag = false;                           // flag == false: 주문 메뉴 비활성화
                 continue;
             }
 
+            /**
+             * 상세 메뉴 로직
+             */
             Menu menu = selectMainMenu(mainInput);
             while (true) {
                 menuPrinter(menu);                          // 카테고리 하위 메뉴 출력
@@ -96,7 +114,10 @@ public class Kiosk {
 
                 MenuItem menuItem = selectMenuItem(menuInput, menu);    // 선택된 메뉴를 출력하고 반환
 
-                cartMenuPrinter(menuItem);                  // 장바구니 관련 메뉴
+                /**
+                 * 장바구니 관련 로직
+                 */
+                cartMenuPrinter(menuItem);                  // 장바구니 관련 메뉴 출력
                 int cartAddInput = inputValidator(scanner); // 입력값 검증 -> 장바구니 담기, 취소 선택
                 if (cartAddInput == 1) {
                     flag = true;
@@ -115,12 +136,12 @@ public class Kiosk {
         }
     }
 
-    private void cartMenuPrinter(MenuItem menuItem) {
-        System.out.println('"' + menuItem.getName() + " | ₩ " + priceFormat(menuItem.getPrice()) + " | " + menuItem.getDescription() + '"');
-        System.out.println("위 메뉴를 장바구니에 추가 하시겠습니까?");
-        System.out.println("1. 확인\t 2. 취소");
-    }
-
+    /**
+     * 최종 주문 로직
+     * shoppingCart.showCart()메서드를 호출하여 장바구니 메뉴와 장바구니에 담긴 전체 금액을 출력하고 전체 금액을 반환
+     * @param shoppingCart  장바구니 리스트
+     * @return  포맷팅 된 장바구니 총 금액
+     */
     private String order(ShoppingCart shoppingCart) {
         System.out.println("아래와 같이 주문 하시겠습니까?");
         System.out.println();
@@ -129,6 +150,16 @@ public class Kiosk {
         System.out.println();
         System.out.println("1. 확인\t 2. 메뉴판");
         return totalPriceFormat;
+    }
+
+    /**
+     * 주문 메뉴 출력
+     */
+    private void orderMenuPrinter() {
+        System.out.println();
+        System.out.println("[ORDER MENU]");
+        System.out.println("4. Orders\t| 장바구니를 확인 후 주문합니다.");
+        System.out.println("5. Cancel\t| 진행중인 주문을 취소 합니다");
     }
 
     /**
@@ -142,13 +173,6 @@ public class Kiosk {
             System.out.println(count++ + ". " + menu.getCategory());
         }
         System.out.println("0. 종료");
-    }
-
-    private void orderMenuPrinter() {
-        System.out.println();
-        System.out.println("[ORDER MENU]");
-        System.out.println("4. Orders\t| 장바구니를 확인 후 주문합니다.");
-        System.out.println("5. Cancel\t| 진행중인 주문을 취소 합니다");
     }
 
     /**
@@ -209,6 +233,16 @@ public class Kiosk {
         MenuItem menuItem = menu.findMenuItem(input);
         System.out.printf("선택한 메뉴: %s | ₩ %7s | %s%n", menuItem.getName(), priceFormat(menuItem.getPrice()), menuItem.getDescription());
         return menuItem;
+    }
+
+    /**
+     * 장바구니 메뉴 출럭
+     * @param menuItem 선택된 상품
+     */
+    private void cartMenuPrinter(MenuItem menuItem) {
+        System.out.println('"' + menuItem.getName() + " | ₩ " + priceFormat(menuItem.getPrice()) + " | " + menuItem.getDescription() + '"');
+        System.out.println("위 메뉴를 장바구니에 추가 하시겠습니까?");
+        System.out.println("1. 확인\t 2. 취소");
     }
 
 }
