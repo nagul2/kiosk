@@ -4,10 +4,24 @@ import java.util.Objects;
 
 public class MenuItem {
 
+    /**
+     * 상품 이름
+     */
     private final String name;
+
+    /**
+     * 상품 단가
+     */
     private final long price;
+
+    /**
+     * 상품 설명
+     */
     private final String description;
 
+    /**
+     * 장바구니에 담은 수량
+     */
     private int quantity;
 
     public MenuItem(String name, long price, String description) {
@@ -26,6 +40,22 @@ public class MenuItem {
 
     public String getDescription() {
         return description;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void addQuantity(int quantity) {
+        this.quantity += Math.abs(quantity);
+    }
+
+    /**
+     * 상품의 수량과 단가를 곱한 단일 상품의 금액 반환
+     * @return 단가 * 수량
+     */
+    public long itemPrice() {
+        return quantity * price;
     }
 
     @Override

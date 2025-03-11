@@ -68,18 +68,20 @@ public class Kiosk {
              * 주문 관련 로직
              */
             if (mainInput == menusSize + 1) {                       // mainInput == 4 -> 주문 진행
-                String lastPriceFormat = order(shoppingCart);       // 주문 내역 출력
+                long totalPrice = order(shoppingCart);       // 주문 내역 출력
 
-                int lastSelect = inputValidator(scanner);           // 입력값 검증 -> 주문, 메뉴판 이동 선택
-                if (lastSelect == 1) {                              // lastSelect == 1 -> 최종 주문
+                int orderInput = inputValidator(scanner);           // 입력값 검증 -> 주문, 메뉴판 이동 선택
+                if (orderInput == 1) {                              // lastSelect == 1 -> 최종 주문
 
-                    //todo 할인 로직 추가
+                    discountMenuPrinter();
+                    int discountInput = inputValidator(scanner);       // 입력값 검증 -> 할인 정책 적용
+                    String discountPriceFormat = shoppingCart.getDiscountPrice(totalPrice, discountInput);
 
-                    System.out.println("주문이 완료 되었습니다. 금액은 ₩ " + lastPriceFormat + " 입니다");
+                    System.out.println("주문이 완료 되었습니다. 금액은 ₩ " + discountPriceFormat + " 입니다");
                     shoppingCart.deleteAllCart();                   // 주문이 완료되면 장바구니 초기화 후 flag = false 설정
                     flag = false;
                     continue;
-                } else if (lastSelect == 2) {                       // lastSelect == 2 -> 메뉴판 이동
+                } else if (orderInput == 2) {                       // lastSelect == 2 -> 메뉴판 이동
                     System.out.println("메뉴로 돌아갑니다");
                     continue;
                 } else {
@@ -148,33 +150,6 @@ public class Kiosk {
     }
 
     /**
-     * 최종 주문 로직
-     * shoppingCart.showCart()메서드를 호출하여 장바구니 메뉴와 장바구니에 담긴 전체 금액을 출력하고 전체 금액을 반환
-     * @param shoppingCart  장바구니 리스트
-     * @return  포맷팅 된 장바구니 총 금액
-     */
-    // todo 최종 금액 뽑아낼 포맷팅 해서 뽑아낼 필요 없음
-    private String order(ShoppingCart shoppingCart) {
-        System.out.println("아래와 같이 주문 하시겠습니까?");
-        System.out.println();
-        String totalPriceFormat = shoppingCart.showCart();
-
-        System.out.println();
-        System.out.println("1. 확인\t 2. 메뉴판");
-        return totalPriceFormat;
-    }
-
-    /**
-     * 주문 메뉴 출력
-     */
-    private void orderMenuPrinter() {
-        System.out.println();
-        System.out.println("[ORDER MENU]");
-        System.out.println("4. Orders\t| 장바구니를 확인 후 주문합니다.");
-        System.out.println("5. Cancel\t| 진행중인 주문을 취소 합니다");
-    }
-
-    /**
      * 카테고리(MenuItem의 대분류)를 출력
      * @param menus List<Menu>
      */
@@ -188,6 +163,44 @@ public class Kiosk {
     }
 
     /**
+     * 주문 메뉴 출력
+     */
+    private void orderMenuPrinter() {
+        System.out.println();
+        System.out.println("[ORDER MENU]");
+        System.out.println("4. Orders\t| 장바구니를 확인 후 주문합니다.");
+        System.out.println("5. Cancel\t| 진행중인 주문을 취소 합니다");
+    }
+
+    /**
+     * 최종 주문 확인 로직
+     * shoppingCart.showCart(), shoppingCart.getTotalPrice()로 장바구니 내역과 전체 주문 금액을 출력
+     * @param shoppingCart  장바구니 리스트
+     * @return
+     */
+    private long order(ShoppingCart shoppingCart) {
+        System.out.println("아래와 같이 주문 하시겠습니까?");
+        System.out.println();
+        shoppingCart.showCart();
+        long totalPrice = shoppingCart.getTotalPrice();
+
+        System.out.println();
+        System.out.println("1. 확인\t 2. 메뉴판");
+        return totalPrice;
+    }
+
+    /**
+     * 할인 메뉴 출력
+     *
+     */
+    private void discountMenuPrinter() {
+                Arrays.stream(DiscountPolicy.values())
+                .forEach(policy ->
+                        System.out.printf("%d. %-6s : %2d%%%n", policy.getInput(), policy.getDescription(), policy.getDiscountRate()));
+    }
+
+
+    /**
      * 조회된 메뉴를 반환
      * 검증된 입력값을 받아 menus 리스트에서 Menu를 조회해서 반환함(마찬가지로 입력값 -1이 필요함)
      * input 값이 menus의 값보다 큰 경우 예외 처리가 되도록 코드 추가
@@ -196,25 +209,6 @@ public class Kiosk {
      */
     private Menu selectMainMenu(int input) {
         return menus.get(input - 1);
-    }
-
-    /**
-     * 입력값을 검증하고 반환
-     * 숫자가 아닌 다른 입력값인 경우 비즈니스 로직이 벗어났으므로 예외처리 후 0으로 return(카테고리 조회 시 종료, 상세 메뉴 조회 시 처음으로 이동)
-     * @param scanner 입력을 위한 Scanner
-     * @return 검증된 입력값 및 예외 로직에 따른 동작을 반환
-     */
-    private int inputValidator(Scanner scanner) {
-        try {
-            int input = scanner.nextInt();
-            scanner.nextLine();
-            return Math.abs(input);
-        } catch (InputMismatchException e) {
-            System.out.println("숫자만 입력 가능합니다. 숫자만 입력 해주세요.");   // 숫자만 입력 가능하다고 수정(재사용 위함)
-            System.out.println();
-            scanner.nextLine();
-            return 0;           // 0으로 반환 Menu
-        }
     }
 
     /**
@@ -257,4 +251,23 @@ public class Kiosk {
         System.out.println("1. 확인\t 2. 취소");
     }
 
+
+    /**
+     * 입력값을 검증하고 반환
+     * 숫자가 아닌 다른 입력값인 경우 비즈니스 로직이 벗어났으므로 예외처리 후 0으로 return(카테고리 조회 시 종료, 상세 메뉴 조회 시 처음으로 이동)
+     * @param scanner 입력을 위한 Scanner
+     * @return 검증된 입력값 및 예외 로직에 따른 동작을 반환
+     */
+    private int inputValidator(Scanner scanner) {
+        try {
+            int input = scanner.nextInt();
+            scanner.nextLine();
+            return Math.abs(input);
+        } catch (InputMismatchException e) {
+            System.out.println("숫자만 입력 가능합니다. 숫자만 입력 해주세요.");   // 숫자만 입력 가능하다고 수정(재사용 위함)
+            System.out.println();
+            scanner.nextLine();
+            return 0;           // 0으로 반환 Menu
+        }
+    }
 }
