@@ -9,12 +9,12 @@ public class ShoppingCart {
     /**
      * 장바구니 필드 원래 수량은 객체 개념상 MenuItem에 있는것이 맞다
      */
-    private final Map<MenuItem, Integer> cart = new HashMap<>();
+    private final Map<MenuItem, Integer> cartMap= new HashMap<>();
 
     /**
-     * 장바구니르
+     * 장바구니를 리스트로 구조 변경 진행
      */
-    private final List<MenuItem> cartList = new ArrayList<>();
+    private final List<MenuItem> cart = new ArrayList<>();
 
 
     // 메뉴 아이템 안에 수량 존재
