@@ -3,7 +3,7 @@ package challenge.lv1;
 import java.util.HashMap;
 import java.util.Map;
 
-import static challenge.lv1.util.PriceFormatter.priceFormat;
+import static challenge.util.PriceFormatter.priceFormat;
 
 public class ShoppingCart {
 

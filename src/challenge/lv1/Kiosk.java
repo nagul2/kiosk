@@ -2,7 +2,7 @@ package challenge.lv1;
 
 import java.util.*;
 
-import static challenge.lv1.util.PriceFormatter.priceFormat;
+import static challenge.util.PriceFormatter.priceFormat;
 
 public class Kiosk {
     /**

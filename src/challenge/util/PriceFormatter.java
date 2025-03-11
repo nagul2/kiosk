@@ -1,4 +1,4 @@
-package challenge.lv1.util;
+package challenge.util;
 
 import java.text.DecimalFormat;
 
