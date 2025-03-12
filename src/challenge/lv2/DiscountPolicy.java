@@ -2,10 +2,10 @@ package challenge.lv2;
 
 public enum DiscountPolicy {
 
-    PATRIOT(1,10, "국가유공자"),
-    SOLDIER(2,5, "군인"),
-    STUDENT(3,3, "학생"),
-    BASIC(4,0, "일반")
+    PATRIOT(1, 10, "국가유공자"),
+    SOLDIER(2, 5, "군인"),
+    STUDENT(3, 3, "학생"),
+    BASIC(4, 0, "일반")
     ;
 
     private final int input;

@@ -24,7 +24,7 @@ public class Kiosk {
      * Main에서 생성한 Menu들을 저장
      * @param menus Menu를 가변인자로 받을 수 있음
      */
-    public Kiosk(Menu...menus) {
+    public Kiosk(Menu ...menus) {
         Collections.addAll(this.menus, menus);
     }
 
@@ -67,19 +67,13 @@ public class Kiosk {
             /**
              * 주문 관련 로직
              */
-            if (mainInput == menusSize + 1) {                       // mainInput == 4 -> 주문 진행
-                long totalPrice = order(shoppingCart);       // 주문 내역 출력
+            if (mainInput == menusSize + 1) {                   // mainInput == 4 -> 주문 진행
+                long totalPrice = order(shoppingCart);          // 주문 내역 출력
+                int orderInput = inputValidator(scanner);       // 입력값 검증 -> 주문, 메뉴판 이동 선택
 
-                int orderInput = inputValidator(scanner);           // 입력값 검증 -> 주문, 메뉴판 이동 선택
                 if (orderInput == 1) {                              // lastSelect == 1 -> 최종 주문
-
-                    discountMenuPrinter();
-                    int discountInput = inputValidator(scanner);       // 입력값 검증 -> 할인 정책 적용
-                    String discountPriceFormat = shoppingCart.getDiscountPrice(totalPrice, discountInput);
-
-                    System.out.println("주문이 완료 되었습니다. 금액은 ₩ " + discountPriceFormat + " 입니다");
-                    shoppingCart.deleteAllCart();                   // 주문이 완료되면 장바구니 초기화 후 flag = false 설정
-                    flag = false;
+                    complateOrder(scanner, totalPrice);             // 최종 주문 완료 로직
+                    flag = false;                                   // flag = false 설정
                     continue;
                 } else if (orderInput == 2) {                       // lastSelect == 2 -> 메뉴판 이동
                     System.out.println("메뉴로 돌아갑니다");
@@ -93,13 +87,20 @@ public class Kiosk {
             /**
              * 주문 취소 로직 - 장바구니 초기화
              */
-            // todo 전체 취소화 부분 취소
-            if (mainInput == menusSize + 2) {
-                System.out.println("장바구니가 비워졌습니다.");
-                System.out.println();
-                shoppingCart.deleteAllCart();
-                flag = false;                           // flag == false: 주문 메뉴 비활성화
-                continue;
+            if (mainInput == menusSize + 2) {                 // mainInput == 5 -> 주문 취소 진행
+                System.out.println("1. 전체 취소\t 2. 부분 취소");
+                int cancelInput = inputValidator(scanner);    // 입력값 검증(재사용) -> 취소 메뉴
+
+                if (cancelInput == 1) {     // 전체 취소
+                    System.out.println("장바구니가 비워졌습니다.");
+                    System.out.println();
+                    shoppingCart.deleteAllCart();
+                    flag = false;           // flag == false: 주문 메뉴 비활성화
+                    continue;
+                } else if (cancelInput == 2) {  // 부분 취소
+                    partCancel(scanner);        // 대,소문자 구분하지 않음
+                    continue;
+                }
             }
 
             /**
@@ -149,6 +150,34 @@ public class Kiosk {
         }
     }
 
+    private void complateOrder(Scanner scanner, long totalPrice) {
+        discountMenuPrinter();
+        int discountInput = inputValidator(scanner);    // 입력값 검증 -> 할인 정책 적용
+        String discountPriceFormat = shoppingCart.getDiscountPrice(totalPrice, discountInput);
+
+        System.out.println("주문이 완료 되었습니다. 금액은 ₩ " + discountPriceFormat + " 입니다");
+        shoppingCart.deleteAllCart();                   // 주문이 완료되면 장바구니 초기화
+    }
+
+    /**
+     * 장바구니의 부분 취소 로직
+     * @param scanner 입력값을 위한 scanner
+     */
+    private void partCancel(Scanner scanner) {
+        partCancelMenuPrinter();
+        String cancelMenuInput = scanner.nextLine();
+        shoppingCart.deleteOneCartList(cancelMenuInput);
+    }
+
+    /**
+     * 부분 취소를 위한 메뉴 출력
+     */
+    private void partCancelMenuPrinter() {
+        System.out.println("장바구니에서 삭제할 상품 이름을 입력해 주세요.");
+        shoppingCart.showCart();
+        System.out.print("삭제할 상품명:");
+    }
+
     /**
      * 카테고리(MenuItem의 대분류)를 출력
      * @param menus List<Menu>
@@ -191,7 +220,6 @@ public class Kiosk {
 
     /**
      * 할인 메뉴 출력
-     *
      */
     private void discountMenuPrinter() {
                 Arrays.stream(DiscountPolicy.values())
