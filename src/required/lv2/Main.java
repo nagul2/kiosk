@@ -20,7 +20,7 @@ public class Main {
 
         while (true) {
             menuPrinter(menuItems);
-            int input = InputValidator(scanner);
+            int input = inputValidator(scanner);
             if (input == 0) {
                 System.out.println("프로그램을 종료합니다.");
                 break;
@@ -41,7 +41,7 @@ public class Main {
      * @param scanner 입력을 위한 Scanner
      * @return 검증된 입력값 및 예외 로직에 따른 동작을 반환
      */
-    private static int InputValidator(Scanner scanner) {
+    private static int inputValidator(Scanner scanner) {
         try {
             int input = scanner.nextInt();
             scanner.nextLine();
