@@ -31,7 +31,7 @@ public enum DiscountPolicy {
     }
 
     /**
-     * totalPrice에 할인률을 적용하여 할인금액을 반환하는 메서드를 Enum에서 제공
+     * totalPrice에 할인율을 적용하여 할인금액을 반환하는 메서드를 Enum에서 제공
      *
      * @param totalPrice 할인전 금액
      * @return 할인 정책에 따른 할인 금액을 반환
