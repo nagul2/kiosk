@@ -17,20 +17,21 @@ public class ShoppingCart {
     /**
      * 장바구니에 선택된 MenuItem과 수량을 저장
      * 만약 장바구니에 MenuItem이 존재한다면 기존의 수량에 수량을 추가
-     *
+     * Stream을 사용하도록 코드 수정
      * @param menuItem 선택된 MenuItem
      * @param quantity MenuItem의 수량
      */
     public void addCart(MenuItem menuItem, int quantity) {
-        for (MenuItem item : cart) {
-            if (item.equals(menuItem)) {
-                item.addQuantity(quantity);
-                System.out.println(menuItem.getName() + " " + menuItem.getQuantity() + " 개가 장바구니에 추가 되었습니다.");
-                return;
-            }
+
+        boolean matchResult = cart.stream().anyMatch(cartItem -> cartItem.equals(menuItem));
+
+        if (matchResult) {
+            menuItem.addQuantity(quantity);
+        } else {
+            menuItem.addQuantity(quantity);
+            cart.add(menuItem);
         }
-        menuItem.addQuantity(quantity);
-        cart.add(menuItem);
+
         System.out.println(menuItem.getName() + " " + quantity + " 개가 장바구니에 추가 되었습니다.");
     }
 
