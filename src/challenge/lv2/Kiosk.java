@@ -48,7 +48,6 @@ public class Kiosk {
             }
 
             int mainInput = inputValidator(scanner);        // 입력값 검증 -> 메뉴 선택 or flag가 true일 때 주문 및 취소 선택
-
             if (mainInput == 0) {
                 System.out.println("프로그램을 종료합니다.");
                 break;
@@ -72,8 +71,17 @@ public class Kiosk {
                 int orderInput = inputValidator(scanner);       // 입력값 검증 -> 주문, 메뉴판 이동 선택
 
                 if (orderInput == 1) {                              // lastSelect == 1 -> 최종 주문
-                    complateOrder(scanner, totalPrice);             // 최종 주문 완료 로직
-                    flag = false;                                   // flag = false 설정
+                    discountMenuPrinter();
+                    int discountInput = inputValidator(scanner);    // 입력값 검증 -> 할인 정책 적용
+
+                    if (discountInput == 0) {
+                        System.out.println("잘못된 할인 정책을 입력하셨습니다. 다시 주문을 확인해 주세요");
+                        continue;
+                    }
+
+                    String discountPriceFormat = shoppingCart.getDiscountPrice(totalPrice, discountInput);
+                    System.out.println("주문이 완료 되었습니다. 금액은 ₩ " + discountPriceFormat + " 입니다");
+                    shoppingCart.deleteAllCart();                   // 주문이 완료되면 장바구니 초기화                    flag = false;                                   // flag = false 설정
                     continue;
                 } else if (orderInput == 2) {                       // lastSelect == 2 -> 메뉴판 이동
                     System.out.println("메뉴로 돌아갑니다");
@@ -149,16 +157,6 @@ public class Kiosk {
             }
         }
     }
-
-    private void complateOrder(Scanner scanner, long totalPrice) {
-        discountMenuPrinter();
-        int discountInput = inputValidator(scanner);    // 입력값 검증 -> 할인 정책 적용
-        String discountPriceFormat = shoppingCart.getDiscountPrice(totalPrice, discountInput);
-
-        System.out.println("주문이 완료 되었습니다. 금액은 ₩ " + discountPriceFormat + " 입니다");
-        shoppingCart.deleteAllCart();                   // 주문이 완료되면 장바구니 초기화
-    }
-
     /**
      * 장바구니의 부분 취소 로직
      * @param scanner 입력값을 위한 scanner
