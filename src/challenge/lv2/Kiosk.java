@@ -67,21 +67,11 @@ public class Kiosk {
              * 주문 관련 로직
              */
             if (mainInput == menusSize + 1) {                   // mainInput == 4 -> 주문 진행
-                long totalPrice = order(shoppingCart);          // 주문 내역 출력
+                long totalPrice = checkOrder(shoppingCart);     // 주문 내역 확인 및 전체 금액 반환
+
                 int orderInput = inputValidator(scanner);       // 입력값 검증 -> 주문, 메뉴판 이동 선택
-
                 if (orderInput == 1) {                              // lastSelect == 1 -> 최종 주문
-                    discountMenuPrinter();
-                    int discountInput = inputValidator(scanner);    // 입력값 검증 -> 할인 정책 적용
-
-                    if (discountInput == 0) {
-                        System.out.println("잘못된 할인 정책을 입력하셨습니다. 다시 주문을 확인해 주세요");
-                        continue;
-                    }
-
-                    String discountPriceFormat = shoppingCart.getDiscountPrice(totalPrice, discountInput);
-                    System.out.println("주문이 완료 되었습니다. 금액은 ₩ " + discountPriceFormat + " 입니다");
-                    shoppingCart.deleteAllCart();                   // 주문이 완료되면 장바구니 초기화                    flag = false;                                   // flag = false 설정
+                    discountWithOrder(scanner, totalPrice);         // 할인 적용 및 최종 주문 로직
                     continue;
                 } else if (orderInput == 2) {                       // lastSelect == 2 -> 메뉴판 이동
                     System.out.println("메뉴로 돌아갑니다");
@@ -100,10 +90,7 @@ public class Kiosk {
                 int cancelInput = inputValidator(scanner);    // 입력값 검증(재사용) -> 취소 메뉴
 
                 if (cancelInput == 1) {     // 전체 취소
-                    System.out.println("장바구니가 비워졌습니다.");
-                    System.out.println();
-                    shoppingCart.deleteAllCart();
-                    flag = false;           // flag == false: 주문 메뉴 비활성화
+                    allCancel();
                     continue;
                 } else if (cancelInput == 2) {  // 부분 취소
                     partCancel(scanner);        // 대,소문자 구분하지 않음
@@ -157,24 +144,6 @@ public class Kiosk {
             }
         }
     }
-    /**
-     * 장바구니의 부분 취소 로직
-     * @param scanner 입력값을 위한 scanner
-     */
-    private void partCancel(Scanner scanner) {
-        partCancelMenuPrinter();
-        String cancelMenuInput = scanner.nextLine();
-        shoppingCart.deleteOneCartList(cancelMenuInput);
-    }
-
-    /**
-     * 부분 취소를 위한 메뉴 출력
-     */
-    private void partCancelMenuPrinter() {
-        System.out.println("장바구니에서 삭제할 상품 이름을 입력해 주세요.");
-        shoppingCart.showCart();
-        System.out.print("삭제할 상품명:");
-    }
 
     /**
      * 카테고리(MenuItem의 대분류)를 출력
@@ -205,7 +174,7 @@ public class Kiosk {
      * @param shoppingCart  장바구니 리스트
      * @return
      */
-    private long order(ShoppingCart shoppingCart) {
+    private long checkOrder(ShoppingCart shoppingCart) {
         System.out.println("아래와 같이 주문 하시겠습니까?");
         System.out.println();
         shoppingCart.showCart();
@@ -217,19 +186,61 @@ public class Kiosk {
     }
 
     /**
-     * 할인 메뉴 출력
+     * 할인 정책을 적용한 최종 주문 로직
+     * @param scanner
+     * @param totalPrice
+     */
+    private void discountWithOrder(Scanner scanner, long totalPrice) {
+        discountMenuPrinter();
+        int discountInput = inputValidator(scanner);    // 입력값 검증 -> 할인 정책 적용
+
+        if (discountInput == 0) {
+            System.out.println("잘못된 할인 정책을 입력하셨습니다. 다시 주문을 확인해 주세요");
+            return;
+        }
+
+        String discountPriceFormat = shoppingCart.getDiscountPrice(totalPrice, discountInput);
+        System.out.println("주문이 완료 되었습니다. 금액은 ₩ " + discountPriceFormat + " 입니다");
+        shoppingCart.deleteAllCart();                   // 주문이 완료되면 장바구니 초기화
+        flag = false;                                   // flag = false 설정
+    }
+
+    /**
+     * 할인 정책 출력
+     * Stream API를 활용하여 DiscountPolicy.valuse()로 순회하여 각 할인 정보를 출력
      */
     private void discountMenuPrinter() {
-                Arrays.stream(DiscountPolicy.values())
+        Arrays.stream(DiscountPolicy.values())
                 .forEach(policy ->
                         System.out.printf("%d. %-6s : %2d%%%n", policy.getInput(), policy.getDescription(), policy.getDiscountRate()));
     }
 
+    /**
+     * 장바구니 전체 취소 로직
+     */
+    private void allCancel() {
+        System.out.println("장바구니가 비워졌습니다.");
+        System.out.println();
+        shoppingCart.deleteAllCart();
+        flag = false;           // flag == false: 주문 메뉴 비활성화
+    }
+
+    /**
+     * 장바구니의 부분 취소 로직
+     * @param scanner 입력값을 위한 scanner
+     */
+    private void partCancel(Scanner scanner) {
+        System.out.println("장바구니에서 삭제할 상품 이름을 입력해 주세요.");
+        shoppingCart.showCart();
+        System.out.print("삭제할 상품명:");
+
+        String cancelMenuInput = scanner.nextLine();
+        shoppingCart.deleteOneCartList(cancelMenuInput);
+    }
 
     /**
      * 조회된 메뉴를 반환
-     * 검증된 입력값을 받아 menus 리스트에서 Menu를 조회해서 반환함(마찬가지로 입력값 -1이 필요함)
-     * input 값이 menus의 값보다 큰 경우 예외 처리가 되도록 코드 추가
+     * 검증된 입력값을 받아 menus 리스트에서 Menu를 조회해서 반환함(입력값 -1이 필요함)
      * @param input 검증된 입력값
      * @return 조회된 Menu
      */
