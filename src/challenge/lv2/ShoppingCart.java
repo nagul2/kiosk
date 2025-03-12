@@ -22,7 +22,6 @@ public class ShoppingCart {
      * @param quantity MenuItem의 수량
      */
     public void addCart(MenuItem menuItem, int quantity) {
-
         boolean matchResult = cart.stream().anyMatch(cartItem -> cartItem.equals(menuItem));
 
         if (matchResult) {

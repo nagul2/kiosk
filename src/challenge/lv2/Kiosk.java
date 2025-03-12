@@ -210,6 +210,7 @@ public class Kiosk {
      * Stream API를 활용하여 DiscountPolicy.valuse()로 순회하여 각 할인 정보를 출력
      */
     private void discountMenuPrinter() {
+        System.out.println("할인 메뉴를 선택해 주세요.");
         Arrays.stream(DiscountPolicy.values())
                 .forEach(policy ->
                         System.out.printf("%d. %-6s : %2d%%%n", policy.getInput(), policy.getDescription(), policy.getDiscountRate()));
